@@ -18,29 +18,28 @@ class UserController {
             val connection = getConnection()!!
             val res = TreeMap<String, List<String>>()
             val table = ArrayList<Pair<String, String>>()
-            updateInactiveUsers(connection)
-            updateLastActiveTime(connection, name)
-                connection.from(MainThemeTable)
-                    .innerJoin(SubThemeTable, on = MainThemeTable.id eq SubThemeTable.mainThemeId)
-                    .select(MainThemeTable.themeName, SubThemeTable.themeName)
-                    .orderBy(MainThemeTable.themeName.asc(), SubThemeTable.themeName.asc())
-                    .map {
-                        table.add(Pair(it[MainThemeTable.themeName].toString(), it[SubThemeTable.themeName].toString()))
-                    }
-                var main = table[0].first
-                var sub = ArrayList<String>()
-                table.forEach {
-                    if (it.first == main) {
-                        sub.add(it.second)
-                    } else {
-                        res[main] = sub
-                        sub = ArrayList()
-                        main = it.first
-                        sub.add(it.second)
-                    }
+            updateLastActivityTime(connection, name)
+            connection.from(MainThemeTable)
+                .innerJoin(SubThemeTable, on = MainThemeTable.id eq SubThemeTable.mainThemeId)
+                .select(MainThemeTable.themeName, SubThemeTable.themeName)
+                .orderBy(MainThemeTable.themeName.asc(), SubThemeTable.themeName.asc())
+                .map {
+                    table.add(Pair(it[MainThemeTable.themeName].toString(), it[SubThemeTable.themeName].toString()))
                 }
-                res[main] = sub
-                res
+            var main = table[0].first
+            var sub = ArrayList<String>()
+            table.forEach {
+                if (it.first == main) {
+                    sub.add(it.second)
+                } else {
+                    res[main] = sub
+                    sub = ArrayList()
+                    main = it.first
+                    sub.add(it.second)
+                }
+            }
+            res[main] = sub
+            res
 
         } catch (e: SQLException) {
             e.printStackTrace()
@@ -52,8 +51,15 @@ class UserController {
         try {
             val connection = getConnection()!!
             val res = ArrayList<String>()
-            updateInactiveUsers(connection)
-            updateLastActiveTime(connection, name)
+            updateLastActivityTime(connection, name)
+
+            connection.update(UserTable) {
+                set(it.active, false)
+                where {
+                    UserTable.lastTimeOfActivity less Instant.now().minusSeconds(60 * 60)
+                }
+            }
+
             connection.from(UserTable).select().where {
                 UserTable.active eq true
             }.map { res.add(it[UserTable.name]!!) }
@@ -67,8 +73,7 @@ class UserController {
     fun putNewMessage(name: String, msg: MessageModel): Boolean {
         try {
             val connection = getConnection()!!
-            updateInactiveUsers(connection)
-            updateLastActiveTime(connection, name)
+            updateLastActivityTime(connection, name)
             if (!checkIsAThemeExists(connection, msg.subTheme)) {
                 throw IllegalArgumentException("No such sub theme found")
             }
@@ -89,8 +94,7 @@ class UserController {
         try {
             val connection = getConnection()!!
             val res = ArrayList<Message>()
-            updateInactiveUsers(connection)
-            updateLastActiveTime(connection, name)
+            updateLastActivityTime(connection, name)
             if (!checkIsAThemeExists(connection, theme)) {
                 throw IllegalArgumentException("No such sub theme found")
             }
@@ -118,7 +122,6 @@ class UserController {
     fun logout(name: String): Boolean {
         try {
             val connection = getConnection()!!
-            updateInactiveUsers(connection)
             connection.update(UserTable) {
                 set(it.active, false)
                 where {
@@ -132,25 +135,7 @@ class UserController {
         }
     }
 
-    private fun updateInactiveUsers(connection: Database) {
-        connection.update(UserTable) {
-            set(it.active, false)
-            where {
-                UserTable.lastTimeOfActivity less Instant.now().minusSeconds(60 * 60)
-            }
-        }
-    }
-
-//    private fun checkActive(connection: Database, name: String): Boolean {
-//        connection.from(UserTable).select().where {
-//            UserTable.name eq name
-//        }.forEach {
-//            return it[UserTable.active].toString().toBoolean()
-//        }
-//        return false
-//    }
-
-    private fun updateLastActiveTime(connection: Database, name: String) {
+    private fun updateLastActivityTime(connection: Database, name: String) {
         connection.update(UserTable) {
             set(it.active, true)
             set(it.lastTimeOfActivity, Instant.now())
