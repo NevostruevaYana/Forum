@@ -1,6 +1,7 @@
-val ktor_version: String by project
-val kotlin_version: String by project
-val logback_version: String by project
+val ktor_version = "1.6.0"
+val kotlin_version = "1.6.0"
+val logback_version = "1.2.3"
+val jackson_version = "2.6.0-rc1"
 
 plugins {
     application
@@ -10,7 +11,6 @@ plugins {
 }
 
 group = "com.monkeys"
-version = "0.0.1"
 application {
     mainClass.set("com.monkeys.ApplicationKt")
 }
@@ -18,6 +18,7 @@ application {
 repositories {
     mavenCentral()
 }
+
 
 dependencies {
     implementation("io.ktor:ktor-server-core:$ktor_version")
@@ -35,4 +36,19 @@ dependencies {
     implementation("org.flywaydb:flyway-core:8.5.2")
     implementation("ch.qos.logback:logback-classic:$logback_version")
     implementation("io.ktor:ktor-network-tls-certificates:$ktor_version")
+    implementation("com.fasterxml.jackson.core:jackson-core:$jackson_version")
+    implementation("com.fasterxml.jackson.core:jackson-annotations:$jackson_version")
+    implementation("com.fasterxml.jackson.core:jackson-databind:$jackson_version")
+}
+
+val jar by tasks.getting(Jar::class) {
+    manifest {
+        attributes["Main-Class"] = "com.monkeys.ApplicationKt"
+    }
+
+    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+
+    configurations.compileClasspath.get().forEach {
+        from(if (it.isDirectory) it else zipTree(it))
+    }
 }
