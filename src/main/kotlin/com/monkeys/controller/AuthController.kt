@@ -6,6 +6,7 @@ import com.monkeys.models.AuthModel
 import com.monkeys.repo.AuthRepo
 import java.sql.SQLException
 
+
 class AuthController (private val repo: AuthRepo) {
 
     //checking user existence

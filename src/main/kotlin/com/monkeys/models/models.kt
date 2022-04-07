@@ -42,3 +42,27 @@ class OkHierarchy (
 class OkListOfMessage (
     val messages: List<Message>
 )
+
+//for test only
+
+@Serializable
+data class AuthResponse(
+    val jwt: String
+)
+
+@Serializable
+data class MessageListResponse(
+    val messages: List<Message>
+)
+
+@Serializable
+data class HierarchyResponse (
+    //list with a pair: main_theme and list of sub_themes
+    val hierarchy: Map<String, List<String>>
+)
+
+@Serializable
+data class ActivityUsersResponse (
+    val users: List<String>
+)
+
