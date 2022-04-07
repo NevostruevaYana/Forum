@@ -7,7 +7,7 @@ import java.sql.SQLException
 
 const val user = "postgres"
 const val password = "123456"
-const val url = "jdbc:postgresql://localhost:5432/forum"
+const val url = "jdbc:postgresql://db:5432/forum"
 
 fun getConnection(): Database? {
     try {
