@@ -127,7 +127,7 @@ Something went wrong. Try to register again
 ### Выдача постов форума 
 Request
 ```http request
-GET /forum/request/message-list
+GET /forum/request/message-list/{sub-theme name}
 ```
 OK Response
 ```http request
