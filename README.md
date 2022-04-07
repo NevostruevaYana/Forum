@@ -1,5 +1,12 @@
 # Forum Server
 
+## Deploy
+
+1. В файле docker-compose.yml задать внешние IP:port для core (например, - 11.11.11.11:8888:8080);
+2. В папке проекта вызвать docker-compose up (docker-compose up -d);
+3. ??? 
+4. PROFIT!
+
 ## Авторизация и регистрация
 
 ### Авторизация
