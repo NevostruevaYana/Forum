@@ -27,7 +27,6 @@ services:
       dockerfile: ./tests.dockerfile
     depends_on:
       - core
-    network_mode: "host"
 
 
 volumes:
