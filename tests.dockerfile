@@ -4,4 +4,4 @@ COPY src ./app/src
 COPY build.gradle.kts ./app
 COPY settings.gradle.kts ./app
 WORKDIR app
-ENTRYPOINT ["gradle", "test", "--no-daemon" ]
+ENTRYPOINT ["gradle", "test", "--no-daemon", "--stacktrace"]

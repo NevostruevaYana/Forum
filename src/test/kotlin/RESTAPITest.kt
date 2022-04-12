@@ -7,7 +7,6 @@ import io.ktor.client.features.json.serializer.*
 import io.ktor.client.request.*
 import io.ktor.client.statement.*
 import io.ktor.http.*
-import kotlinx.coroutines.Job
 import kotlinx.coroutines.runBlocking
 import kotlin.test.Test
 import kotlin.test.assertEquals
@@ -34,7 +33,7 @@ class RESTAPITest {
     private val name = getRandomString(10)
     private val pwd = getRandomString(8)
     private val message = "Hello, world!"
-    private val baseURL = "http://host.docker.internal:8080"
+    private val baseURL = "http://core:8080"
     private lateinit var subTheme: String
     private lateinit var token: String
 
