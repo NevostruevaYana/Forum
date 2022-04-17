@@ -1,3 +1,4 @@
+version: "3"
 services:
   db:
     container_name: forum-db-postgres
@@ -9,7 +10,7 @@ services:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: 123456
     ports:
-      - 5432:5432
+      - "5432:5432"
   core:
     container_name: forum-core
     restart: always
@@ -19,7 +20,8 @@ services:
     depends_on:
       - db
     ports:
-      - 8080:8080 #provide the host ip from one of interfaces, or it will be localhost. e.g.: 26.26.26.26:8080:8080
+      - "0.0.0.0:8080:8080" #provide the host ip from one of interfaces, or it will be localhost. e.g.: 26.26.26.26:8080:8080
+      - "0.0.0.0:8443:8443"
   tests:
     container_name: forum-tests
     build:
